@@ -65,7 +65,7 @@ EventEmitter.prototype.emit = function(type) {
             //     throw TypeError('Uncaught, unspecified "error" event.');
             // }
             if (typeof console !== 'undefined') {
-              (console.error || console.log)('Uncaught, unspecified "error" event.', er);
+              console.log('Uncaught, unspecified "error" event.', er);
             }
             return false;
         }
