@@ -59,10 +59,13 @@ EventEmitter.prototype.emit = function(type) {
         if (!this._events.error ||
             (util.isObject(this._events.error) && !this._events.error.length)) {
             er = arguments[1];
-            if (er instanceof Error) {
-                throw er; // Unhandled 'error' event
-            } else {
-                throw TypeError('Uncaught, unspecified "error" event.');
+            // if (er instanceof Error) {
+            //     throw er; // Unhandled 'error' event
+            // } else {
+            //     throw TypeError('Uncaught, unspecified "error" event.');
+            // }
+            if (typeof console !== 'undefined') {
+              (console.error || console.log)('Uncaught, unspecified "error" event.', er);
             }
             return false;
         }

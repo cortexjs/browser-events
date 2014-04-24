@@ -1,6 +1,6 @@
 {
     "name": "events",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "A port of 'events' for cortex from node.js, make your node code run in browsers.",
     "main": "index.js",
     "scripts": {
