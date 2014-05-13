@@ -42,7 +42,7 @@ EventEmitter.defaultMaxListeners = 10;
 // Obviously not all Emitters should be limited to 10. This function allows
 // that to be increased. Set to zero for unlimited.
 EventEmitter.prototype.setMaxListeners = function(n) {
-    if (!util.isNumber(n) || n < 0)
+    if (!util.isNumber(n) || n < 0 || isNaN(n))
         throw TypeError('n must be a positive number');
     this._maxListeners = n;
     return this;
@@ -65,7 +65,7 @@ EventEmitter.prototype.emit = function(type) {
             //     throw TypeError('Uncaught, unspecified "error" event.');
             // }
             if (typeof console !== 'undefined') {
-              console.log('Uncaught, unspecified "error" event.', er);
+                console.log('Uncaught, unspecified "error" event.', er);
             }
             return false;
         }
@@ -148,11 +148,18 @@ EventEmitter.prototype.addListener = function(type, listener) {
 
         if (m && m > 0 && this._events[type].length > m) {
             this._events[type].warned = true;
-            console.error('(node) warning: possible EventEmitter memory ' +
-                'leak detected. %d listeners added. ' +
-                'Use emitter.setMaxListeners() to increase limit.',
-                this._events[type].length);
-            console.trace();
+            if (typeof console !== 'undefined') {
+
+                if (console && console.error) {
+                    console.error('warning: possible EventEmitter memory ' +
+                        'leak detected. %d listeners added. ' +
+                        'Use emitter.setMaxListeners() to increase limit.',
+                        this._events[type].length);
+                }
+                if (console && console.trace) {
+                    console.trace();
+                }
+            }
         }
     }
 
@@ -165,9 +172,17 @@ EventEmitter.prototype.once = function(type, listener) {
     if (!util.isFunction(listener))
         throw TypeError('listener must be a function');
 
+
+    var fired = false;
+
     function g() {
         this.removeListener(type, g);
-        listener.apply(this, arguments);
+
+        if (!fired) {
+            fired = true;
+            listener.apply(this, arguments);
+        }
+
     }
 
     g.listener = listener;
@@ -252,7 +267,7 @@ EventEmitter.prototype.removeAllListeners = function(type) {
 
     if (util.isFunction(listeners)) {
         this.removeListener(type, listeners);
-    } else {
+    } else if (util.isArray(listeners)) {
         // LIFO order
         while (listeners.length)
             this.removeListener(type, listeners[listeners.length - 1]);
