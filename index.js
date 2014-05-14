@@ -27,6 +27,8 @@ function EventEmitter() {
 }
 module.exports = EventEmitter;
 
+module.exports.EventEmitter = EventEmitter;
+
 // > kael: cortex will not support old features
 
 // Backwards-compat with node 0.10.x
